@@ -1,5 +1,7 @@
 var express = require('express');
 var mongo = require('../utils/mongo');
+var jwt = require('jsonwebtoken');
+var middleware = require('../utils/middleware');
 
 var router = express.Router();
 
@@ -37,10 +39,9 @@ router.post('/addUser', function(req, res){
     }
 });
 
-router.get('/getAllUsers', function(req, res){
+router.get('/getAllUsers', middleware.authenticate, function(req, res){
     mongo.getAllUsers()
     .then(result => {
-        console.log(result);
         res.json({"success":true, "message": "all users fetched", "users": result});
     }).catch(err => {
         res.json({"success":false, "message": "Internal error"});
@@ -48,14 +49,28 @@ router.get('/getAllUsers', function(req, res){
 });
 
 router.post('/login', function(req, res){
-    res.json({'as':'asd'});
+    console.log(req.body);
+    mongo.getUser({
+        username: req.body.username,
+        password: req.body.password
+    }).then(result => {
+        if(result===null) res.json({"success":false, "message": "no such user exists"});
+        else{
+            var token = jwt.sign({
+                exp: Math.floor(Date.now() / 1000) + (30 * 60),
+                user: {
+                    username: result.username,
+                    _id: result._id
+                }
+            }, process.env.JWT_SECRET);
+            res.json({"success":true, "message": "login successfull", "token": token});
+        }
+    }).catch(err => {
+        res.json({"success":false, "message": "Internal error"});
+    });
 });
 
-router.get('/getAllUsers', function(req, res){
-    res.json({'as':'asd'});
-});
-
-router.get('/getAllMessages', function(req, res){
+router.get('/getAllMessages',  middleware.authenticate, function(req, res){
     res.json({'as':'asd'});
 });
 
