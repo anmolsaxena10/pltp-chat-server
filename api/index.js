@@ -38,7 +38,13 @@ router.post('/addUser', function(req, res){
 });
 
 router.get('/getAllUsers', function(req, res){
-    res.json({'as':'asd'});
+    mongo.getAllUsers()
+    .then(result => {
+        console.log(result);
+        res.json({"success":true, "message": "all users fetched", "users": result});
+    }).catch(err => {
+        res.json({"success":false, "message": "Internal error"});
+    });
 });
 
 router.post('/login', function(req, res){
