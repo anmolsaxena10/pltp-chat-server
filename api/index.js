@@ -8,7 +8,7 @@ var router = express.Router();
 router.use(function(req, res, next){
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, token');
 
 	if ('OPTIONS' === req.method) {
 		res.sendStatus(200);
@@ -70,8 +70,23 @@ router.post('/login', function(req, res){
     });
 });
 
-router.get('/getAllMessages',  middleware.authenticate, function(req, res){
-    res.json({'as':'asd'});
+router.get('/getAllMessages/:username',  middleware.authenticate, function(req, res){
+    console.log(req.params.username);
+    if(req.params.username!=null){
+        mongo.getAllMessages(req.user.username, req.params.username)
+        .then(result => {
+            res.json({"success":true, "message": "all messages fetched", "messages": result});
+        }).catch(err => {
+            res.json({"success":false, "message": "Internal error"});
+        });
+    }
+    else{
+        res.json({"success":false, "message": "Bad Request"});
+    }
+});
+
+router.get('/verifyToken', middleware.authenticate, function(req, res){
+    res.json({status: true});
 });
 
 module.exports = router;

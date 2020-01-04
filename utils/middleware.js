@@ -7,6 +7,7 @@ module.exports.authenticate = function(req, res, next){
         if(token){
             var decoded = jwt.verify(token, process.env.JWT_SECRET);
             console.log(decoded);
+            req.user = decoded.user;
             next();
         }
         else throw("unauthorized");
