@@ -15,14 +15,14 @@ module.exports.addUser = function(input_user){
     });
 }
 
-module.exports.getAllUsers = function(){
+module.exports.getAllUsers = function(username){
 
     return new Promise((resolve, reject) => {
         const client = new MongoClient(process.env.MONGODB_CON_STRING, { useNewUrlParser: true });
         client.connect(err => {
             // console.log("Mongo connected");
             const users = client.db(process.env.MONGODB).collection("users");
-            users.find({}, { projection: { _id: 1, username: 1} }).toArray(function(err, result){
+            users.find({"username": {$ne: username}}, { projection: { _id: 1, username: 1} }).toArray(function(err, result){
                 client.close();
                 resolve(result);
             });
