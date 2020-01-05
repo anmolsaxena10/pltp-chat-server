@@ -1,2 +1,0 @@
-var redisClient = require('./redis');
-

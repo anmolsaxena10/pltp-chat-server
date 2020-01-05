@@ -8,6 +8,7 @@ var jwt = require('jsonwebtoken');
 var socket = require('socket.io');
 var redisAdapter = require('socket.io-redis');
 var red = require('redis');
+var mongo = require('./utils/mongo');
 
 var router = require('./api/index');
 var redisClient = require('./utils/redis');
@@ -60,6 +61,11 @@ redisClient().then(function(redis){
                 password: process.env.REDIS_PASSWORD
             });
             pub.publish(message.to + ":channel", JSON.stringify(message));
+            mongo.addMessage(message).then(result => {
+                if(result===null) console.log("error saving message");
+            }).catch(err => {
+                console.log(err);
+            });
             console.log(message.to + ":channel");
 			console.log("message ", message);
         });
