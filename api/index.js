@@ -40,7 +40,7 @@ router.post('/addUser', function(req, res){
 });
 
 router.get('/getAllUsers', middleware.authenticate, function(req, res){
-    mongo.getAllUsers()
+    mongo.getAllUsers(req.user.username)
     .then(result => {
         res.json({"success":true, "message": "all users fetched", "users": result});
     }).catch(err => {
