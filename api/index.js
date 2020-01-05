@@ -19,13 +19,13 @@ router.use(function(req, res, next){
 });
 
 router.post('/addUser', function(req, res){
-    console.log(req.body);
+    // console.log(req.body);
     if(req.body.username.match(/^[\d\w_]{4,32}$/) && req.body.password.match(/^[\d\w!@#$%^&*(){}[\];"'.,+-=]{6,128}$/)){
         mongo.addUser({
             username: req.body.username,
             password: req.body.password
         }).then(result => {
-            console.log("result1");
+            // console.log("result1");
             if(result===null) res.json({"success":false, "message": "User already exists"});
             else {
                 res.json({"success":true, "message": "user created", "userId": result.insertedId});
@@ -49,7 +49,7 @@ router.get('/getAllUsers', middleware.authenticate, function(req, res){
 });
 
 router.post('/login', function(req, res){
-    console.log(req.body);
+    // console.log(req.body);
     mongo.getUser({
         username: req.body.username,
         password: req.body.password
@@ -71,7 +71,7 @@ router.post('/login', function(req, res){
 });
 
 router.get('/getAllMessages/:username',  middleware.authenticate, function(req, res){
-    console.log(req.params.username);
+    // console.log(req.params.username);
     if(req.params.username!=null){
         mongo.getAllMessages(req.user.username, req.params.username)
         .then(result => {
